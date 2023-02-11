@@ -1,22 +1,18 @@
 import player from './player.js'
 
 export default function manager() {
-  const state = {
-    players: [],
-  }
+  let players = []
 
   function registerPlayer(id, name, position) {
-    let newPlayer = player()
-    newPlayer.state = {
+    state.players.push({
       id,
       name,
       position
-    }
-    state.players.push(newPlayer)
+    })
   }
 
   return {
-    state,
+    players,
     registerPlayer
   }
 }

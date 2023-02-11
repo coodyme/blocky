@@ -13,14 +13,22 @@
 </head>
 
 <body>
-  <h1>Lorby</h1>
+  <header>Lorby</header>
   <div id="container">
-    <canvas id="canvas"></canvas>
-    <div id="status">
+    <div id="players-container">
       <h2>Players</h2>
-      <ul id="players"></ul>
+      <ul id="players-content"></ul>
+    </div>
+    <div class="canvas-container">
+      <canvas id="canvas" width="500px" height="500px"></canvas>
+    </div>
+    <div id="chat-container">
+      <h2>Chat</h2>
+      <div id="chat-content"></div>
+      <input id="chat-message" placeholder="Message">
     </div>
   </div>
+  <footer>Lorbyrights all reserved</footer>
 </body>
 
 </html>

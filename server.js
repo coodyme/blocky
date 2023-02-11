@@ -27,16 +27,16 @@ app.use(express.static('public'))
 socket.on('connection', (socket) => {
   console.log(`${PREFIX} New connection: ${socket.id}`)
 
-  gameManager.registerPlayer(
-    socket.id,
-    `player_${socket.id}}`,
-    [Math.random(500), Math.random(500)]
-  )
-
-  socket.on('message', (data) => {
-    console.log(`${PREFIX} Message received: ${data}`)
-    socket.broadcast.emit('message', data)
+  gameManager.players.push({
+    id: socket.id,
+    name:`player_${socket.id}}`,
+    position:[Math.random(500), Math.random(500)]
   })
+
+  socket.on('sendMessage', (message) => {
+    console.log(message)
+  })
+
 })
 
 server.listen(3333, () => {
