@@ -8,11 +8,19 @@
   <title>Lorby</title>
   <link rel="stylesheet" href="index.css">
   </link>
-  <script defer src="index.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="module" defer src="client.js"></script>
 </head>
 
 <body>
-
+  <h1>Lorby</h1>
+  <div id="container">
+    <canvas id="canvas"></canvas>
+    <div id="status">
+      <h2>Players</h2>
+      <ul id="players"></ul>
+    </div>
+  </div>
 </body>
 
 </html>

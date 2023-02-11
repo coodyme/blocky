@@ -10,3 +10,21 @@ body {
   background-color: #333;
   color: #f0f0f0;
 }
+
+canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  image-rendering: -moz-crisp-edges;
+  width: 500px;
+  height: 500px;
+}
+
+#container {
+  display: flex;
+  flex-direction: row;
+}
+
+#status {
+  display: flex;
+  flex-direction: column;
+}
