@@ -24,6 +24,8 @@ const gameManager = manager()
  */
 app.use(express.static('public'))
 
+let messages = []
+
 socket.on('connection', (socket) => {
   console.log(`${PREFIX} New connection: ${socket.id}`)
 
@@ -33,8 +35,12 @@ socket.on('connection', (socket) => {
     position:[Math.random(500), Math.random(500)]
   })
 
+  socket.emit('previousMessages', messages)
+
   socket.on('sendMessage', (message) => {
     console.log(message)
+    messages.push(message)
+    socket.broadcast.emit('receivedMessage', message)
   })
 
 })
