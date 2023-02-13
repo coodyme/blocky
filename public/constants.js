@@ -5,7 +5,6 @@ export const PREFIX_CLIENT = '[LORBY CLIENT]';
 export const EVENT_CONNECTION = 'connection';
 export const EVENT_CONNECT = 'connect';
 export const EVENT_DISCONNECT = 'disconnect';
-export const EVENT_RECONNECT = 'reconnect';
 export const EVENT_SEND_MESSAGE = 'send message';
 export const EVENT_SEND_MESSAGE_GLOBAL = 'send message global';
 export const EVENT_PREVIOUS_MESSAGES = 'previous messages';

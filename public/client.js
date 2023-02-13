@@ -10,11 +10,11 @@ import {
  } from './constants.js'
 import { toggleElement } from './utils.js'
 
-const canvas = document.getElementsByClassName('canvas')[0];
+const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 const userInput = document.getElementById('user-input');
 const playButton = document.getElementById('play-button');
-const roomButton = document.getElementById('room-button');
+//const roomButton = document.getElementById('room-button');
 
 const chatMessages = document.getElementById('chat-messages');
 const chatMessageInput = document.getElementById('chat-message-input');
@@ -25,7 +25,10 @@ const statusPlayersList = document.getElementById('status-players-list');
 const socket = io()
 const gameManager = manager()
 
-const skins = ['lorbi', 'milos', 'lorbiroto', 'lorbilove']
+const skins = ['lorbi', 'milos', 'lorbiroto', 'lorbilove', 'lorbipresso']
+
+const lorbiroto = new Image();
+lorbiroto.src = "assets/lorbiroto.png";
 
 userInput.addEventListener('click', event => {
   if (userInput.value) {
@@ -34,13 +37,6 @@ userInput.addEventListener('click', event => {
 })
 
 playButton.addEventListener('click', () => {
-  window.alert('keep calm, lorby is coming soon')
-  return
-  toggleElement('menu-page')
-  toggleElement('game-page')
-})
-
-roomButton.addEventListener('click', () => {
   const user = userInput.value
   if (!user) {
     userInput.value = 'Please enter a name'
@@ -49,6 +45,16 @@ roomButton.addEventListener('click', () => {
   toggleElement('menu-page')
   toggleElement('chat-page')
 })
+
+/* roomButton.addEventListener('click', () => {
+  const user = userInput.value
+  if (!user) {
+    userInput.value = 'Please enter a name'
+    return
+  }
+  toggleElement('menu-page')
+  toggleElement('chat-page')
+}) */
 
 
 canvas.width = window.innerWidth
@@ -76,7 +82,6 @@ function drawGlobalMessage(message) {
 socket.on(EVENT_CONNECT, () => {
   const playerId = socket.id
   console.log(`${PREFIX_CLIENT} Player connected on Client with id: ${playerId}`)
-  gameManager.players.push(playerId)
   document.title = playerId
 })
 
@@ -86,19 +91,6 @@ socket.on(EVENT_UPDATE_PLAYERS, players => {
     let li = document.createElement('li')
     li.innerHTML = player.id
     statusPlayersList.appendChild(li)
-  }
-
-  console.log(players)
-
-  for(let player in gameManager.players) {
-    let img = document.createElement('img')
-    let skin = skins[Math.floor(Math.random() * skins.length)]
-    img.src = `./assets/${skin}.png`
-    let x = Math.floor(Math.random() * canvas.width)
-    let y = Math.floor(Math.random() * canvas.height)
-    img.onload = () => {
-      context.drawImage(img, x, y, 50, 50)
-    }
   }
 })
 
@@ -128,3 +120,67 @@ chatMessageInput.addEventListener('keyup', event => {
     drawMessage(message)
   }
  })
+
+ const inputs = {
+  up: false,
+  down: false,
+  left: false,
+  right: false,
+};
+
+ window.addEventListener("keydown", (e) => {
+  if (e.key === "w") {
+    inputs["up"] = true;
+  } else if (e.key === "s") {
+    inputs["down"] = true;
+  } else if (e.key === "d") {
+    inputs["right"] = true;
+  } else if (e.key === "a") {
+    inputs["left"] = true;
+  }
+  
+  socket.emit("inputs", inputs);
+});
+
+window.addEventListener("keyup", (e) => {
+  if (e.key === "w") {
+    inputs["up"] = false;
+  } else if (e.key === "s") {
+    inputs["down"] = false;
+  } else if (e.key === "d") {
+    inputs["right"] = false;
+  } else if (e.key === "a") {
+    inputs["left"] = false;
+  }
+  if (["a", "s", "w", "d"].includes(e.key)) {
+
+  }
+  socket.emit("inputs", inputs);
+});
+
+function update() {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  for(const player in gameManager.players) {
+    const inputs = inputsMap[player.id];
+    const previousY = player.y;
+    const previousX = player.x;
+
+    if (inputs.up) {
+      player.y -= SPEED;
+    } else if (inputs.down) {
+      player.y += SPEED;
+    }
+
+    if (inputs.left) {
+      player.x -= SPEED;
+    } else if (inputs.right) {
+      player.x += SPEED;
+    }
+    context.drawImage(lorbiroto, player.x, player.y);
+    console.log(player)
+  }
+  window.requestAnimationFrame(update)
+}
+
+window.requestAnimationFrame(update)

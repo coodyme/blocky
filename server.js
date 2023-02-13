@@ -10,7 +10,6 @@ import {
   PREFIX_SERVER,
   EVENT_CONNECTION,
   EVENT_DISCONNECT,
-  EVENT_RECONNECT,
   EVENT_SEND_MESSAGE,
   EVENT_SEND_MESSAGE_GLOBAL,
   EVENT_PREVIOUS_MESSAGES,
@@ -24,6 +23,10 @@ const httpServer = http.createServer(app)
 const socketServer = new Server(httpServer)
 
 const gameManager = manager()
+
+const inputsMap = {};
+
+const SPEED = 5;
 
 /* const tunnel = localtunnel(PORT, { subdomain: SUBDOMAIN}, (err, tunnel) => {
   console.log(`${PREFIX_SERVER} Tunnel is running on ${tunnel.url}`)
@@ -40,12 +43,13 @@ socketServer.on(EVENT_CONNECTION, (socket) => {
   gameManager.players.push({
     id: socket.id,
     name:`player_${socket.id}}`,
-    position:[Math.random(500), Math.random(500)]
+    x: 400,
+    y: 400
   })
 
   console.log(gameManager.players.length)
 
-  socketServer.emit(EVENT_UPDATE_PLAYERS, gameManager.players)
+  socket.emit(EVENT_UPDATE_PLAYERS, gameManager.players)
   socket.emit(EVENT_PREVIOUS_MESSAGES, messages)
   
   console.log(`${PREFIX_SERVER} New connection: ${socket.id}`)
@@ -68,16 +72,23 @@ socketServer.on(EVENT_CONNECTION, (socket) => {
           content: `${oldPlayer.name} has left the game.`
         })
         
-        socket.broadcast.emit(EVENT_UPDATE_PLAYERS, gameManager.players)
+        socket.emit(EVENT_UPDATE_PLAYERS, gameManager.players)
         
         console.log(`${PREFIX_SERVER} Disconnected: ${socket.id}`)
       }
     }
   })
   
-  socket.on('reconnect', () => {
-    console.log(`${PREFIX_SERVER} Reconnected: ${socket.id}`)
-  })
+  inputsMap[socket.id] = {
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+  };
+
+  socket.on("inputs", (inputs) => {
+    inputsMap[socket.id] = inputs;
+  });
 })
 
 httpServer.listen(PORT, () => {
