@@ -6,29 +6,65 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lorby</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="index.css">
   </link>
-  <script src="/socket.io/socket.io.js"></script>
-  <script type="module" defer src="client.js"></script>
 </head>
 
 <body>
-  <header>Lorby</header>
-  <div id="container">
-    <div id="players-container">
-      <h2>Players</h2>
-      <ul id="players-content"></ul>
-    </div>
-    <div class="canvas-container">
-      <canvas id="canvas" width="500px" height="500px"></canvas>
-    </div>
-    <div id="chat-container">
-      <h2>Chat</h2>
-      <div id="chat-content"></div>
-      <input id="chat-message" placeholder="Message">
+  <div id="menu-page">
+    <div id="menu-content">
+      <input id='user-input' type="text" placeholder=":lorbi_name:">
+      <button id="play-button">Play</button>
+      <button id="room-button">Waiting Room</button>
     </div>
   </div>
-  <footer>Lorbyrights all reserved</footer>
+  <div id="slot-page">
+    <div id="slot-content">
+      <h1>There is no more slots available</h1>
+      <p class="pulse">Sorry about that =( :lorbiroto: Retrying...</p>
+    </div>
+  </div>
+  <div id="game-page">
+    <div id="game-content">
+      <canvas class="canvas"></canvas>
+    </div>
+  </div>
+  <div id="room-page">
+    <div id="room-content">
+      <div id="status">
+        <div id="status-players">
+          <h3>Players</h3>
+          <ul id="status-players-list">
+          </ul>
+        </div>
+        <div id="status-score">
+          <h3>Score:</h3>
+          <ul id="status-score-list">
+            <li>Lorby: 300</li>
+            <li>Players: 600</li>
+          </ul>
+        </div>
+      </div>
+      <div id="watch">
+        <h2 class="pulse" id="global">teste</h2>
+        <canvas></canvas>
+      </div>
+      <div id="chat">
+        <h3>Chat</h3>
+        <div id="chat-messages"></div>
+        <div id="chat-message">
+          <input id="chat-message-input" type="text" placeholder="message">
+          <button id="chat-message-button">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="module" src="client.js"></script>
 </body>
 
 </html>
