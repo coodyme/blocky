@@ -20,7 +20,6 @@ const PLAYER_SIZE = 64
 canvas.width = WIDTH
 canvas.height = HEIGHT 
 
-let lastTimestamp = 0
 let clientMap = []
 let clientPlayers = []
 
@@ -94,13 +93,20 @@ function draw() {
     }
 }
 
-function loop(timestamp) {
-  const delta = timestamp - lastTimestamp
+let deltaTime = 0
+let time = 0
+let fps = 0
 
-  update(delta)
+function loop(timestamp) {
+  deltaTime = (timestamp - time) / 1000
+  time = timestamp
+
+  fps = Math.round(1 / deltaTime)
+  
+  update(deltaTime)
   draw()
 
-  lastTimestamp = timestamp
+  console.log(fps, deltaTime)
   window.requestAnimationFrame(loop)
 }
 

@@ -8,7 +8,7 @@ import { setInterval } from 'timers'
 
 const PORT = process.env.PORT || 3333
 const GRAVITY = 0.00981
-const TICK_RATE = 50
+const TICK_RATE = 60
 
 const app = express()
 const httpServer = http.createServer(app)
@@ -123,12 +123,12 @@ function isOverlapping(a, b) {
   )
 }
 
-let lastTime = performance.now()
+let lastTime = Date.now()
 setInterval(() => {
-  let now = performance.now()
+  let now = Date.now()
   let deltaTime = now - lastTime
   loop(deltaTime) 
-  lastTime = performance.now()
+  lastTime = Date.now()
 }, 1000 / TICK_RATE)
 
 httpServer.listen(PORT, () => {
