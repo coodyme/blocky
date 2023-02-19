@@ -29,6 +29,19 @@ const MAP = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
+const colliders = []
+for (let row = 0; row < MAP.length; row++) {
+  for (let col = 0; col < MAP[row].length; col++) {
+    let tile = MAP[row][col]
+    if (tile === 1) {
+      colliders.push({
+        position: { x: col * 64, y: row * 64 },
+        size: { x: 64, y: 64 },
+      })
+    }
+  }
+}
+
 const PLAYERS = []
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,9 +54,9 @@ socketServer.on('connect', (socket) => {
 
   PLAYERS.push({
     id: socket.id,
-    name: `player_${SKINS[Math.floor(Math.random() * SKINS.length)]}`,
+    name: `player_${socket.id}`,
     skin: `assets/images/${SKINS[Math.floor(Math.random() * SKINS.length)]}`,
-    position: { x: Math.floor(Math.random() * 100), y: 0},
+    position: { x: Math.floor(Math.random() * 200), y: 0},
     velocity: { x: 0, y: 0},
     size: { x: 64, y: 64 },
   })
@@ -65,10 +78,26 @@ socketServer.on('connect', (socket) => {
 const loop = (deltaTime) => {
   for (let player of PLAYERS) {
     player.velocity.y += GRAVITY * deltaTime
-    player.position.y = player.velocity.y
+    player.position.y += player.velocity.y
+
+    for (let collider of colliders) {
+      if (isOverlapping(player, collider)) {
+        player.position.y -= player.velocity.y
+        player.velocity.y = 0
+      }
+    }
   }  
 
   socketServer.emit('players', PLAYERS)
+}
+
+function isOverlapping(a, b) {
+  return (
+    a.position.x < b.position.x + b.size.x &&
+    a.position.x + a.size.x > b.position.x &&
+    a.position.y < b.position.y + b.size.y &&
+    a.size.y + a.position.y > b.position.y
+  )
 }
 
 let lastTime = performance.now()
