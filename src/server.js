@@ -84,6 +84,7 @@ socketServer.on('connect', (socket) => {
 
 const PLAYER_SPEED = 3
 
+
 const loop = (deltaTime) => {
   for (let player of PLAYERS) {
     const inputs = inputMap[player.id] || { }
