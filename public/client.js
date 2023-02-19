@@ -26,6 +26,14 @@ let clientPlayers = []
 
 const SKINS = ['lorbiroto', 'lorbirinha', 'milos', 'lorbiman', 'lorbipresso']
 
+const inputs = {
+  'ArrowUp': false,
+  'ArrowDown': false,
+  'ArrowLeft': false,
+  'ArrowRight': false,
+}
+
+
 clientSocket.on('setup', (map) => {
   clientMap = map
 })
@@ -33,9 +41,23 @@ clientSocket.on('setup', (map) => {
 clientSocket.on('players', (players) => {
   clientPlayers = players
 })
+ 
+document.addEventListener('keydown', (event) => {
+  if (event.key in inputs) {
+    inputs[event.key] = true
+  }
+  console.log(inputs)
+})
+
+document.addEventListener('keyup', (event) => {
+  if (event.key in inputs) {
+    inputs[event.key] = false
+  }
+})
+
 
 function update(delta) {
-
+  clientSocket.emit('inputs', inputs)
 }
 
 function draw() {

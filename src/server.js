@@ -17,16 +17,16 @@ const socketServer = new Server(httpServer)
 app.use(express.static('public'))
 
 const MAP = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
-  [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1],
 ]
 
 const colliders = []
@@ -46,6 +46,9 @@ const PLAYERS = []
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const SKINS = fs.readdirSync(`${__dirname}/../public/assets/images`)
+
+const inputMap = {}
+const socketMap = {}
 
 socketServer.on('connect', (socket) => {
   console.log(`Player connected with id: ${ socket.id}`)
@@ -73,10 +76,28 @@ socketServer.on('connect', (socket) => {
     }
     
   })
+
+  socket.on('inputs', (inputs) => {
+    inputMap[socket.id] = inputs
+  })
 })
+
+const PLAYER_SPEED = 3
 
 const loop = (deltaTime) => {
   for (let player of PLAYERS) {
+    const inputs = inputMap[player.id] || { }
+
+    if (inputs['ArrowUp']) {
+      player.position.y -= PLAYER_SPEED * 1.2
+    }
+
+    if (inputs['ArrowLeft']) {
+      player.position.x -= PLAYER_SPEED
+    } else if (inputs['ArrowRight']) {
+      player.position.x += PLAYER_SPEED
+    } 
+
     player.velocity.y += GRAVITY * deltaTime
     player.position.y += player.velocity.y
 
@@ -87,6 +108,7 @@ const loop = (deltaTime) => {
       }
     }
   }  
+
 
   socketServer.emit('players', PLAYERS)
 }
