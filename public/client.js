@@ -24,6 +24,8 @@ let lastTimestamp = 0
 let clientMap = []
 let clientPlayers = []
 
+const SKINS = ['lorbiroto', 'lorbirinha', 'milos', 'lorbiman', 'lorbipresso']
+
 clientSocket.on('setup', (map) => {
   clientMap = map
 })
@@ -56,13 +58,17 @@ function draw() {
     }
 
     for (let player of clientPlayers) {
-      context.fillStyle = ['red', 'blue', 'green', 'yellow'][Math.floor(Math.random() * 4)]
-      context.fillRect(
+      let skin = new Image()
+      skin.src = player.skin
+      context.drawImage(
+        skin,
         player.position.x,
         player.position.y,
         PLAYER_SIZE,
         PLAYER_SIZE
       )
+
+      context.fillText(player.name, player.position.x / 1.5, player.position.y - 10 )
     }
 }
 

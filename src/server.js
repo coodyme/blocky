@@ -1,5 +1,8 @@
 import express from 'express'
 import http from 'http'
+import fs from 'fs'
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { Server } from 'socket.io'
 import { setInterval } from 'timers'
 
@@ -27,7 +30,9 @@ const MAP = [
 ]
 
 const PLAYERS = []
-const SKINS = ['lorbiroto', 'lorbirinha', 'milos', 'lorbiman', 'lorbipresso']
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const SKINS = fs.readdirSync(`${__dirname}/../public/assets/images`)
 
 socketServer.on('connect', (socket) => {
   console.log(`Player connected with id: ${ socket.id}`)
@@ -37,7 +42,7 @@ socketServer.on('connect', (socket) => {
   PLAYERS.push({
     id: socket.id,
     name: `player_${SKINS[Math.floor(Math.random() * SKINS.length)]}`,
-    skin: SKINS[Math.floor(Math.random() * SKINS.length)],
+    skin: `assets/images/${SKINS[Math.floor(Math.random() * SKINS.length)]}`,
     position: { x: Math.floor(Math.random() * 100), y: 0},
     velocity: { x: 0, y: 0},
     size: { x: 64, y: 64 },
