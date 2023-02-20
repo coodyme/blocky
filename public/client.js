@@ -24,21 +24,12 @@ canvas.height = HEIGHT
 let clientMap = []
 let clientPlayers = []
 
-const SKINS = ['lorbiroto', 'lorbirinha', 'milos', 'lorbiman', 'lorbipresso']
-
 const inputs = {
   'ArrowUp': false,
   'ArrowDown': false,
   'ArrowLeft': false,
   'ArrowRight': false,
 }
-
-window.addEventListener('keyup', (event) => {
-  if (event.key === 'ArrowUp') {
-  audio.src = ['assets/audio/piranha.mp3', 'assets/audio/fresco.mp3'][Math.floor(Math.random() * 2)]
-  audio.play()
-  }
-})
 
 clientSocket.on('setup', (map) => {
   clientMap = map
@@ -68,12 +59,13 @@ function update(delta) {
 function draw() {
   context.clearRect(0, 0, WIDTH, HEIGHT)
   
-    context.fillStyle = foregroundColor
+    
     for (let row = 0; row < clientMap.length; row++) {
       for (let col = 0; col < clientMap[row].length; col++) {
         const tile = clientMap[row][col]
-
+        
         if (tile === 1) {
+          context.fillStyle = foregroundColor
           context.fillRect(
             col * TILE_SIZE,
             row * TILE_SIZE,
@@ -81,14 +73,22 @@ function draw() {
             TILE_SIZE
           )
         }
+        
+        if (tile === 2) {
+          context.fillStyle = secondaryColor
+          context.fillRect(
+            (col * 64),
+            (row * 64) + 16 + (16 / 2),
+            16,
+            16
+          )
+        }
       }
     }
 
     for (let player of clientPlayers) {
-      let skin = new Image()
-      skin.src = player.skin
-      context.drawImage(
-        skin,
+      context.fillStyle = primaryColor
+      context.fillRect(
         player.position.x,
         player.position.y,
         PLAYER_SIZE,
