@@ -35,7 +35,6 @@ const inputs = {
 
 window.addEventListener('keyup', (event) => {
   if (event.key === 'ArrowUp') {
-    console.log(audio)
   audio.src = ['assets/audio/piranha.mp3', 'assets/audio/fresco.mp3'][Math.floor(Math.random() * 2)]
   audio.play()
   }

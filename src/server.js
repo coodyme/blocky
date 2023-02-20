@@ -30,6 +30,7 @@ const MAP = [
 ]
 
 const colliders = []
+
 for (let row = 0; row < MAP.length; row++) {
   for (let col = 0; col < MAP[row].length; col++) {
     let tile = MAP[row][col]
@@ -49,9 +50,19 @@ const SKINS = fs.readdirSync(`${__dirname}/../public/assets/images`)
 
 const inputMap = {}
 const socketMap = {}
+const ipMap = {}
 
 socketServer.on('connect', (socket) => {
   console.log(`Player connected with id: ${ socket.id}`)
+
+  const ip = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address
+
+  if (ipMap[ip]) {
+    socket.disconnect()
+    return
+  }
+
+  ipMap[ip] = true
 
   socket.emit('setup', MAP)
 
@@ -65,6 +76,7 @@ socketServer.on('connect', (socket) => {
   })
 
   socket.on('disconnect', (reason) => {
+    delete ipMap[ip]
     const index = PLAYERS.findIndex(player => player.id === socket.id)
     
     if (index !== -1) {
