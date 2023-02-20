@@ -22,8 +22,8 @@ const MAP = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+  [1, 2, 2, 2, 0, 0, 0, 0, 0, 1, 0, 2, 2, 0, 0, 0],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0],
@@ -53,14 +53,18 @@ const socketMap = {}
 const ipMap = {}
 
 socketServer.on('connect', (socket) => {
-  console.log(`Player connected with id: ${ socket.id}`)
-
-  const ip = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address
-
+  const ip = 
+    socket.handshake.headers['x-forwarded-for'] || 
+    socket.handshake.headers['x-real-ip'] ||
+    socket.handshake.address
+  
   if (ipMap[ip]) {
     socket.disconnect()
+    console.log(`Player disconnected: ${ socket.id} (max connections per ip reached)`)
     return
   }
+
+  console.log(`Player connected with id: ${ socket.id}`)
 
   ipMap[ip] = true
 
@@ -70,9 +74,9 @@ socketServer.on('connect', (socket) => {
     id: socket.id,
     name: `player_${socket.id}`,
     skin: `assets/images/${SKINS[Math.floor(Math.random() * SKINS.length)]}`,
-    position: { x: Math.floor(Math.random() * 200), y: 0},
+    position: { x: Math.floor(Math.random() * 500), y: 0},
     velocity: { x: 0, y: 0},
-    size: { x: 64, y: 64 },
+    size: { x: 32, y: 32 },
   })
 
   socket.on('disconnect', (reason) => {

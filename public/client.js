@@ -16,7 +16,7 @@ const context = canvas.getContext('2d')
 const WIDTH = window.innerWidth
 const HEIGHT = window.innerHeight
 const TILE_SIZE = 64
-const PLAYER_SIZE = 64
+const PLAYER_SIZE = 32
 
 canvas.width = WIDTH
 canvas.height = HEIGHT 
