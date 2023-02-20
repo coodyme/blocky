@@ -1,6 +1,7 @@
 const clientSocket = io()
 
 const canvas = document.getElementById('canvas')
+const audio = document.getElementById('audio')
 const primaryColor = getComputedStyle(document.documentElement)
   .getPropertyValue('--primary')
 const secondaryColor = getComputedStyle(document.documentElement)
@@ -32,6 +33,13 @@ const inputs = {
   'ArrowRight': false,
 }
 
+window.addEventListener('keyup', (event) => {
+  if (event.key === 'ArrowUp') {
+    console.log(audio)
+  audio.src = ['assets/audio/piranha.mp3', 'assets/audio/fresco.mp3'][Math.floor(Math.random() * 2)]
+  audio.play()
+  }
+})
 
 clientSocket.on('setup', (map) => {
   clientMap = map
@@ -45,7 +53,6 @@ document.addEventListener('keydown', (event) => {
   if (event.key in inputs) {
     inputs[event.key] = true
   }
-  console.log(inputs)
 })
 
 document.addEventListener('keyup', (event) => {
@@ -89,7 +96,8 @@ function draw() {
         PLAYER_SIZE
       )
 
-      context.fillText(player.name, player.position.x / 1.5, player.position.y - 10 )
+      let textPositionX = (player.position.x + player.velocity.x) - (PLAYER_SIZE / 2) 
+      context.fillText(player.name, textPositionX, player.position.y - 10 )
     }
 }
 
@@ -106,7 +114,6 @@ function loop(timestamp) {
   update(deltaTime)
   draw()
 
-  console.log(fps, deltaTime)
   window.requestAnimationFrame(loop)
 }
 

@@ -7,7 +7,7 @@ import { Server } from 'socket.io'
 import { setInterval } from 'timers'
 
 const PORT = process.env.PORT || 3333
-const GRAVITY = 0.00981
+const GRAVITY = 0.0981
 const TICK_RATE = 60
 
 const app = express()
@@ -17,16 +17,16 @@ const socketServer = new Server(httpServer)
 app.use(express.static('public'))
 
 const MAP = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0],
 ]
 
 const colliders = []
@@ -82,36 +82,39 @@ socketServer.on('connect', (socket) => {
   })
 })
 
-const PLAYER_SPEED = 3
-
+const PLAYER_SPEED = 8
 
 const loop = (deltaTime) => {
   for (let player of PLAYERS) {
     const inputs = inputMap[player.id] || { }
 
     if (inputs['ArrowUp']) {
-      player.position.y -= PLAYER_SPEED * 1.2
+      player.position.y -= PLAYER_SPEED * 3
     }
 
     if (inputs['ArrowLeft']) {
       player.position.x -= PLAYER_SPEED
+      if (isColliding(player, colliders)) {
+        player.position.x += PLAYER_SPEED
+      }
+
     } else if (inputs['ArrowRight']) {
       player.position.x += PLAYER_SPEED
+      if (isColliding(player, colliders)) {
+        player.position.x -= PLAYER_SPEED
+      }
     } 
 
     player.velocity.y += GRAVITY * deltaTime
     player.position.y += player.velocity.y
 
-    for (let collider of colliders) {
-      if (isOverlapping(player, collider)) {
-        player.position.y -= player.velocity.y
-        player.velocity.y = 0
-      }
+    if (isColliding(player, colliders)) {
+      player.position.y -= player.velocity.y
+      player.velocity.y = 0
     }
-  }  
-
-
-  socketServer.emit('players', PLAYERS)
+    
+    socketServer.emit('players', PLAYERS)
+  }
 }
 
 function isOverlapping(a, b) {
@@ -121,6 +124,15 @@ function isOverlapping(a, b) {
     a.position.y < b.position.y + b.size.y &&
     a.size.y + a.position.y > b.position.y
   )
+}
+
+function isColliding(player, colliders) {
+  for (let collider of colliders) {
+    if (isOverlapping(player, collider)) {
+      return true
+    }
+  }
+  return false
 }
 
 let lastTime = Date.now()
