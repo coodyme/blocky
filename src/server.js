@@ -17,16 +17,19 @@ const socketServer = new Server(httpServer)
 app.use(express.static('public'))
 
 const MAP = [
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ]
 
 const colliders = []
@@ -46,25 +49,24 @@ for (let row = 0; row < MAP.length; row++) {
 const PLAYERS = []
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const SKINS = fs.readdirSync(`${__dirname}/../public/assets/images`)
 
 const inputMap = {}
 const socketMap = {}
 const ipMap = {}
 
 socketServer.on('connect', (socket) => {
-  const ip = 
-    socket.handshake.headers['x-forwarded-for'] || 
+  const ip =
+    socket.handshake.headers['x-forwarded-for'] ||
     socket.handshake.headers['x-real-ip'] ||
     socket.handshake.address
-  
+
   if (ipMap[ip]) {
     socket.disconnect()
-    console.log(`Player disconnected: ${ socket.id} (max connections per ip reached)`)
+    console.log(`Player disconnected: ${socket.id} (max connections per ip reached)`)
     return
   }
 
-  console.log(`Player connected with id: ${ socket.id}`)
+  console.log(`Player connected with id: ${socket.id}`)
 
   ipMap[ip] = true
 
@@ -74,23 +76,23 @@ socketServer.on('connect', (socket) => {
     id: socket.id,
     name: `player_${socket.id}`,
     color: 'primary',
-    position: { x: Math.floor(Math.random() * 500), y: 0},
-    velocity: { x: 0, y: 0},
+    position: { x: Math.floor(Math.random() * 500), y: 0 },
+    velocity: { x: 0, y: 0 },
     size: { x: 32, y: 32 },
   })
 
   socket.on('disconnect', (reason) => {
     delete ipMap[ip]
     const index = PLAYERS.findIndex(player => player.id === socket.id)
-    
+
     if (index !== -1) {
       const player = PLAYERS.splice(index, 1)[0]
-      
+
       if (player) {
         console.log(`Player: ${player.name} disconnected with reason: ${reason}`)
       }
     }
-    
+
   })
 
   socket.on('inputs', (inputs) => {
@@ -102,7 +104,7 @@ const PLAYER_SPEED = 8
 
 const loop = (deltaTime) => {
   for (let player of PLAYERS) {
-    const inputs = inputMap[player.id] || { }
+    const inputs = inputMap[player.id] || {}
 
     if (inputs['ArrowUp']) {
       player.position.y -= PLAYER_SPEED * 3
@@ -119,7 +121,7 @@ const loop = (deltaTime) => {
       if (isColliding(player, colliders)) {
         player.position.x -= PLAYER_SPEED
       }
-    } 
+    }
 
     player.velocity.y += GRAVITY * deltaTime
     player.position.y += player.velocity.y
@@ -128,7 +130,7 @@ const loop = (deltaTime) => {
       player.position.y -= player.velocity.y
       player.velocity.y = 0
     }
-    
+
     socketServer.emit('players', PLAYERS)
   }
 }
@@ -155,7 +157,7 @@ let lastTime = Date.now()
 setInterval(() => {
   let now = Date.now()
   let deltaTime = now - lastTime
-  loop(deltaTime) 
+  loop(deltaTime)
   lastTime = Date.now()
 }, 1000 / TICK_RATE)
 
