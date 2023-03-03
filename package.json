@@ -1,15 +1,15 @@
 {
-  "name": "lorby",
+  "name": "blocky-project",
   "version": "1.0.0",
   "main": "server.js",
-  "repository": "https://github.com/augustobritodev/lorby.git",
-  "author": "augustobritodev <augustobritodev@icloud.com>",
+  "repository": "https://github.com/coodyme/blocky-project",
+  "author": "coodyme <hi@coody.me>",
   "license": "MIT",
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "expose": "lt --port 3333 --subdomain lorby --local_https"
+    "expose": "lt --port 3333 --subdomain blocky --local_https"
   },
   "dependencies": {
     "express": "^4.18.2",
